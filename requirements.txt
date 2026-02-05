@@ -1,0 +1,114 @@
+# Web framework
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+
+# HTTP client
+httpx>=0.25.0
+
+# Authentication
+pyjwt>=2.8.0
+bcrypt>=4.1.0
+passlib>=1.7.4
+
+# Encryption for credentials
+cryptography>=41.0.0
+
+# Scheduling
+apscheduler>=3.10.0
+
+# LLM integration
+anthropic>=0.7.0
+
+# YAML parsing (for OpenAPI specs)
+pyyaml>=6.0
+
+# Data validation
+pydantic>=2.5.0
+
+# Email support
+aiosmtplib>=3.0.0
+
+# ==================== DATABASE DRIVERS ====================
+
+# PostgreSQL
+asyncpg>=0.29.0
+
+# MySQL / MariaDB / PlanetScale
+aiomysql>=0.2.0
+
+# MongoDB
+motor>=3.3.0
+
+# SQLite
+aiosqlite>=0.19.0
+
+# SQL Server / Azure SQL
+pyodbc>=5.0.0
+
+# Oracle
+oracledb>=2.0.0
+
+# Redis
+redis>=5.0.0
+
+# Elasticsearch
+elasticsearch>=8.11.0
+
+# Cassandra / Astra
+cassandra-driver>=3.28.0
+
+# ==================== CLOUD PROVIDER SDKS ====================
+
+# AWS (S3, DynamoDB, Redshift)
+boto3>=1.33.0
+aiobotocore>=2.7.0
+
+# Azure (Blob Storage, SQL)
+azure-storage-blob>=12.19.0
+azure-identity>=1.15.0
+
+# Google Cloud (BigQuery, GCS, Firebase)
+google-cloud-bigquery>=3.13.0
+google-cloud-storage>=2.13.0
+google-cloud-firestore>=2.13.0
+
+# ==================== DATA WAREHOUSE ====================
+
+# Snowflake
+snowflake-connector-python>=3.5.0
+
+# ClickHouse
+clickhouse-connect>=0.6.0
+
+# ==================== ASYNC UTILITIES ====================
+aiofiles>=23.2.0
+
+# ==================== PRODUCTION DEPENDENCIES ====================
+
+# Database ORM (PostgreSQL for production)
+sqlalchemy>=2.0.0
+psycopg2-binary>=2.9.0
+alembic>=1.12.0  # Database migrations
+
+# Task Queue
+celery>=5.3.0
+redis>=5.0.0  # Already listed above but needed for Celery
+
+# Rate Limiting & Security
+slowapi>=0.1.9
+python-multipart>=0.0.6
+
+# Monitoring & Logging
+prometheus-client>=0.19.0
+sentry-sdk[fastapi]>=1.39.0
+python-json-logger>=2.0.0
+
+# Environment Management
+python-dotenv>=1.0.0
+
+# Excel/Spreadsheet Support
+openpyxl>=3.1.0
+pandas>=2.1.0
+
+# Health Checks
+httptools>=0.6.0
