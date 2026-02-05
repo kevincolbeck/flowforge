@@ -60,7 +60,7 @@ class Workflow(Base):
     steps = Column(JSON, nullable=False)  # List of workflow steps
     status = Column(SQLEnum(WorkflowStatus), default=WorkflowStatus.DRAFT, index=True)
     tags = Column(JSON, default=list)
-    metadata = Column(JSON, default=dict)
+    extra_data = Column(JSON, default=dict)  # Renamed from metadata (reserved word)
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -131,7 +131,7 @@ class ExecutionLog(Base):
     step_id = Column(String(100))
     level = Column(String(20))  # INFO, WARNING, ERROR
     message = Column(Text)
-    metadata = Column(JSON, default=dict)
+    log_data = Column(JSON, default=dict)  # Renamed from metadata (reserved word)
     timestamp = Column(DateTime, default=datetime.utcnow, index=True)
 
     # Relationships
