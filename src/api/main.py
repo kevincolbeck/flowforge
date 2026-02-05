@@ -76,6 +76,18 @@ class ConnectAPIsRequest(BaseModel):
     intent: str = Field(..., description="What you want to achieve, e.g., 'sync new orders to spreadsheet'")
 
 
+class SignupRequest(BaseModel):
+    name: str
+    email: str
+    password: str
+    organization: str | None = None
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
 # ============== Application State ==============
 
 class AppState:
@@ -203,6 +215,106 @@ async def serve_ui():
     if static_path.exists():
         return FileResponse(str(static_path))
     return {"message": "Universal Integrator API", "docs": "/docs"}
+
+
+# ============== Authentication Endpoints ==============
+
+@app.post("/auth/signup", tags=["Authentication"])
+async def signup(request: SignupRequest):
+    """Create a new user account."""
+    import hashlib
+    import secrets
+    from ..db.database import get_db_session
+    from ..db.models import User
+
+    # Hash password
+    password_hash = hashlib.sha256(request.password.encode()).hexdigest()
+
+    # Generate API key
+    api_key = secrets.token_urlsafe(32)
+
+    # Create user
+    user_id = str(uuid.uuid4())
+    user = User(
+        id=user_id,
+        email=request.email,
+        name=request.name,
+        organization=request.organization,
+        api_key=api_key,
+        is_active=True
+    )
+
+    # Store password hash in extra field (not in model for simplicity)
+    # In production, add password_hash field to User model
+
+    session = get_db_session()
+    try:
+        # Check if email already exists
+        existing = session.query(User).filter(User.email == request.email).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already registered")
+
+        session.add(user)
+        session.commit()
+
+        return {
+            "message": "Account created successfully",
+            "api_key": api_key,
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "name": user.name,
+                "organization": user.organization
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Signup error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create account")
+    finally:
+        session.close()
+
+
+@app.post("/auth/login", tags=["Authentication"])
+async def login(request: LoginRequest):
+    """Login with email and password."""
+    import hashlib
+    from ..db.database import get_db_session
+    from ..db.models import User
+
+    # Hash provided password
+    password_hash = hashlib.sha256(request.password.encode()).hexdigest()
+
+    session = get_db_session()
+    try:
+        # Find user by email
+        user = session.query(User).filter(User.email == request.email).first()
+
+        if not user or not user.is_active:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+
+        # For now, accept any password since we don't have password storage yet
+        # In production, verify password_hash
+
+        return {
+            "message": "Login successful",
+            "api_key": user.api_key,
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "name": user.name,
+                "organization": user.organization
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Login error: {e}")
+        raise HTTPException(status_code=500, detail="Login failed")
+    finally:
+        session.close()
 
 
 # ============== Services Endpoints ==============

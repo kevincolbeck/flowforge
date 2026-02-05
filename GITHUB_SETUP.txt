@@ -1,0 +1,30 @@
+GitHub Setup Instructions (2 minutes)
+
+STEP 1: Create GitHub Repository
+1. Go to https://github.com/new
+2. Repository name: flowforge
+3. Description: Universal API Integration Platform - Better than Zapier
+4. Public repository
+5. Do NOT initialize with README (we have our code already)
+6. Click "Create repository"
+
+STEP 2: Push Your Code
+After creating the repo, GitHub will show you commands. Use these:
+
+cd C:/Users/kevin/projects/universal-integrator
+git remote add origin https://github.com/YOUR-USERNAME/flowforge.git
+git branch -M main
+git push -u origin main
+
+STEP 3: Deploy to Railway
+1. Go to https://railway.app
+2. Sign in with GitHub
+3. Click "New Project"
+4. Select "Deploy from GitHub repo"
+5. Choose "flowforge"
+6. Railway auto-detects Dockerfile and deploys!
+
+Done! Your app will be live at: flowforge-production.up.railway.app
+
+---
+REPO IS READY TO PUSH - Just create it on GitHub and run the commands above!

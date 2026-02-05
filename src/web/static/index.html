@@ -4,1158 +4,274 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FlowForge - Universal Integration Platform</title>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
-        .fade-enter-from, .fade-leave-to { opacity: 0; }
-        .slide-enter-active, .slide-leave-active { transition: all 0.3s ease; }
-        .slide-enter-from { opacity: 0; transform: translateX(20px); }
-        .slide-leave-to { opacity: 0; transform: translateX(-20px); }
-        .service-card:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(139, 92, 246, 0.2); }
-        .glow { box-shadow: 0 0 60px rgba(139, 92, 246, 0.3); }
-        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.4); } 50% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.6); } }
-        .pulse-glow { animation: pulse-glow 2s infinite; }
-        .step-connector { position: relative; }
-        .step-connector::after { content: ''; position: absolute; left: 50%; top: 100%; width: 2px; height: 24px; background: linear-gradient(to bottom, #8B5CF6, #6366F1); }
-        .mapping-line { stroke-dasharray: 5,5; animation: dash 0.5s linear infinite; }
-        @keyframes dash { to { stroke-dashoffset: -10; } }
-    </style>
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body class="bg-gray-950 text-white min-h-screen">
-    <div id="app">
-        <!-- Header -->
-        <header class="border-b border-gray-800 sticky top-0 bg-gray-950/95 backdrop-blur-sm z-50">
-            <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center glow">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
+<body>
+    <!-- Auth Screens -->
+    <div id="auth-container" class="auth-container">
+        <!-- Login Form -->
+        <div id="login-screen" class="auth-screen">
+            <div class="auth-card">
+                <h1>FlowForge</h1>
+                <p class="subtitle">Universal Integration Platform</p>
+
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required placeholder="you@company.com">
                     </div>
-                    <span class="text-xl font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">FlowForge</span>
-                </div>
-                <nav class="flex items-center space-x-1">
-                    <button @click="currentView = 'home'" :class="currentView === 'home' ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'" class="px-4 py-2 rounded-lg transition font-medium">Home</button>
-                    <button @click="currentView = 'workflows'" :class="currentView === 'workflows' ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'" class="px-4 py-2 rounded-lg transition font-medium">Workflows</button>
-                    <button @click="currentView = 'etl'" :class="currentView === 'etl' ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'" class="px-4 py-2 rounded-lg transition font-medium">ETL Pipelines</button>
-                    <button @click="currentView = 'settings'" :class="currentView === 'settings' ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'" class="px-4 py-2 rounded-lg transition font-medium">Settings</button>
-                </nav>
-            </div>
-        </header>
-
-        <main class="max-w-7xl mx-auto px-6 py-8">
-            <!-- HOME VIEW -->
-            <div v-if="currentView === 'home'" class="space-y-12">
-                <div class="text-center py-12">
-                    <h1 class="text-5xl font-extrabold mb-4">
-                        <span class="bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">Connect Everything</span>
-                    </h1>
-                    <p class="text-xl text-gray-400 max-w-2xl mx-auto">Universal API integration with any authentication. Build multi-step workflows and ETL pipelines.</p>
-                </div>
-
-                <div class="grid md:grid-cols-3 gap-6">
-                    <button @click="startWorkflowBuilder" class="group bg-gradient-to-br from-purple-600/20 to-indigo-600/20 border border-purple-500/30 rounded-2xl p-8 text-left hover:border-purple-400/50 transition service-card">
-                        <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">Multi-Step Workflow</h3>
-                        <p class="text-gray-400">Build workflows with multiple steps and data passing</p>
-                    </button>
-
-                    <button @click="currentView = 'etl'" class="group bg-gradient-to-br from-indigo-600/20 to-blue-600/20 border border-indigo-500/30 rounded-2xl p-8 text-left hover:border-indigo-400/50 transition service-card">
-                        <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7c-2 0-3 1-3 3z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6M12 9v6"/>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">ETL Pipeline</h3>
-                        <p class="text-gray-400">Extract, transform, and load data to any database</p>
-                    </button>
-
-                    <button @click="currentView = 'settings'" class="group bg-gradient-to-br from-green-600/20 to-emerald-600/20 border border-green-500/30 rounded-2xl p-8 text-left hover:border-green-400/50 transition service-card">
-                        <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">Manage Credentials</h3>
-                        <p class="text-gray-400">Configure OAuth2, API keys, and custom auth</p>
-                    </button>
-                </div>
-
-                <!-- Recent Workflows -->
-                <div v-if="workflows.length > 0">
-                    <h2 class="text-2xl font-bold mb-6">Recent Workflows</h2>
-                    <div class="space-y-3">
-                        <div v-for="workflow in workflows.slice(0, 5)" :key="workflow.id" class="bg-gray-900 border border-gray-800 rounded-xl p-5 flex items-center justify-between hover:border-gray-700 transition">
-                            <div class="flex items-center space-x-4">
-                                <div :class="workflow.status === 'active' ? 'bg-green-500' : 'bg-gray-600'" class="w-3 h-3 rounded-full"></div>
-                                <div>
-                                    <h3 class="font-semibold">{{ workflow.name }}</h3>
-                                    <p class="text-gray-500 text-sm">{{ workflow.steps?.length || 1 }} steps</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <button @click="editWorkflow(workflow)" class="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm font-medium transition">Edit</button>
-                                <button @click="executeWorkflow(workflow.id)" class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-sm font-medium transition">Run</button>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required placeholder="••••••••">
                     </div>
-                </div>
-            </div>
+                    <button type="submit" class="btn btn-primary">Sign In</button>
+                </form>
 
-            <!-- WORKFLOW BUILDER VIEW -->
-            <div v-if="currentView === 'builder'" class="space-y-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h1 class="text-3xl font-bold">Workflow Builder</h1>
-                        <p class="text-gray-400">Create multi-step workflows with data passing between steps</p>
-                    </div>
-                    <div class="flex space-x-3">
-                        <button @click="currentView = 'home'" class="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 font-medium transition">Cancel</button>
-                        <button @click="saveWorkflow" class="px-6 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 font-semibold transition">Save Workflow</button>
-                    </div>
-                </div>
-
-                <!-- Workflow Name -->
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
-                    <label class="block text-sm font-medium text-gray-400 mb-2">Workflow Name</label>
-                    <input v-model="workflowBuilder.name" type="text" placeholder="My Workflow" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                </div>
-
-                <!-- Trigger Configuration -->
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
-                    <h3 class="text-lg font-semibold mb-4 flex items-center">
-                        <span class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center mr-3 text-sm font-bold">T</span>
-                        Trigger
-                    </h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Trigger Type</label>
-                            <select v-model="workflowBuilder.trigger.type" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                                <option value="webhook">Webhook (receive data)</option>
-                                <option value="schedule">Schedule (cron)</option>
-                                <option value="manual">Manual</option>
-                            </select>
-                        </div>
-                        <div v-if="workflowBuilder.trigger.type === 'schedule'">
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Cron Expression</label>
-                            <input v-model="workflowBuilder.trigger.cron" type="text" placeholder="0 * * * *" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Steps -->
-                <div class="space-y-4">
-                    <div v-for="(step, index) in workflowBuilder.steps" :key="step.id" class="relative">
-                        <!-- Connector Line -->
-                        <div v-if="index < workflowBuilder.steps.length - 1" class="absolute left-8 top-full w-0.5 h-4 bg-gradient-to-b from-purple-500 to-indigo-500 z-10"></div>
-
-                        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-semibold flex items-center">
-                                    <span class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center mr-3 text-sm font-bold">{{ index + 1 }}</span>
-                                    Step {{ index + 1 }}
-                                </h3>
-                                <button v-if="workflowBuilder.steps.length > 1" @click="removeStep(index)" class="text-red-400 hover:text-red-300 text-sm">Remove</button>
-                            </div>
-
-                            <div class="grid md:grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400 mb-2">Service</label>
-                                    <select v-model="step.service" @change="onServiceChange(step)" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                                        <option value="">Select service...</option>
-                                        <optgroup v-for="(services, category) in servicesByCategory" :key="category" :label="category">
-                                            <option v-for="svc in services" :key="svc.service" :value="svc.service">{{ svc.icon }} {{ svc.display_name }}</option>
-                                        </optgroup>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400 mb-2">Action</label>
-                                    <select v-model="step.action" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                                        <option value="">Select action...</option>
-                                        <option v-for="action in getServiceActions(step.service)" :key="action.action" :value="action.action">{{ action.description }}</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Credential Selection -->
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Credential</label>
-                                <div class="flex space-x-2">
-                                    <select v-model="step.credential_id" class="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                                        <option value="">Select credential...</option>
-                                        <option v-for="cred in getCredentialsForService(step.service)" :key="cred.id" :value="cred.id">{{ cred.name }}</option>
-                                    </select>
-                                    <button @click="openCredentialModal(step.service)" class="px-4 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 font-medium transition">+ New</button>
-                                </div>
-                            </div>
-
-                            <!-- Step Inputs with Data References -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Inputs (use {{trigger.data.field}} or {{steps.step_1.output.field}})</label>
-                                <div class="space-y-2">
-                                    <div v-for="(value, key) in step.inputs" :key="key" class="flex space-x-2">
-                                        <input :value="key" @input="updateInputKey(step, key, $event.target.value)" placeholder="Key" class="w-1/3 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500">
-                                        <input v-model="step.inputs[key]" placeholder="Value or {{reference}}" class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500">
-                                        <button @click="removeInput(step, key)" class="px-3 py-2 rounded-lg bg-red-600/20 text-red-400 hover:bg-red-600/30 text-sm">X</button>
-                                    </div>
-                                    <button @click="addInput(step)" class="text-purple-400 hover:text-purple-300 text-sm">+ Add Input</button>
-                                </div>
-                            </div>
-
-                            <!-- Data Mapping Toggle -->
-                            <div class="mt-4 pt-4 border-t border-gray-800">
-                                <button @click="step.showMapping = !step.showMapping" class="text-sm text-indigo-400 hover:text-indigo-300 flex items-center">
-                                    <svg :class="step.showMapping ? 'rotate-90' : ''" class="w-4 h-4 mr-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                    </svg>
-                                    Data Mapping & Transformation
-                                </button>
-
-                                <div v-if="step.showMapping" class="mt-4 bg-gray-800/50 rounded-xl p-4">
-                                    <div class="space-y-3">
-                                        <div v-for="(mapping, mIndex) in step.mappings" :key="mIndex" class="flex items-center space-x-2">
-                                            <input v-model="mapping.source" placeholder="Source: {{trigger.data.field}}" class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm">
-                                            <select v-model="mapping.transform" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm">
-                                                <option value="">No transform</option>
-                                                <option value="uppercase">UPPERCASE</option>
-                                                <option value="lowercase">lowercase</option>
-                                                <option value="trim">Trim whitespace</option>
-                                                <option value="number">To Number</option>
-                                                <option value="string">To String</option>
-                                                <option value="json_parse">Parse JSON</option>
-                                                <option value="json_stringify">To JSON String</option>
-                                                <option value="date_iso">To ISO Date</option>
-                                                <option value="date_timestamp">To Timestamp</option>
-                                            </select>
-                                            <span class="text-gray-500">-></span>
-                                            <input v-model="mapping.target" placeholder="Target field" class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm">
-                                            <button @click="step.mappings.splice(mIndex, 1)" class="px-2 py-2 rounded-lg bg-red-600/20 text-red-400 hover:bg-red-600/30 text-sm">X</button>
-                                        </div>
-                                        <button @click="step.mappings.push({source: '', transform: '', target: ''})" class="text-purple-400 hover:text-purple-300 text-sm">+ Add Mapping</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Add Step Button -->
-                <button @click="addStep" class="w-full py-4 border-2 border-dashed border-gray-700 rounded-xl text-gray-400 hover:text-white hover:border-purple-500 transition flex items-center justify-center space-x-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
-                    <span>Add Step</span>
-                </button>
-            </div>
-
-            <!-- ETL PIPELINE VIEW -->
-            <div v-if="currentView === 'etl'" class="space-y-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h1 class="text-3xl font-bold">ETL Pipeline Builder</h1>
-                        <p class="text-gray-400">Extract data from any API, transform it, and load to any database</p>
-                    </div>
-                    <button @click="saveETLPipeline" class="px-6 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 font-semibold transition">Save Pipeline</button>
-                </div>
-
-                <!-- Pipeline Name -->
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
-                    <label class="block text-sm font-medium text-gray-400 mb-2">Pipeline Name</label>
-                    <input v-model="etlBuilder.name" type="text" placeholder="My ETL Pipeline" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                </div>
-
-                <!-- Source (Extract) -->
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
-                    <h3 class="text-lg font-semibold mb-4 flex items-center">
-                        <span class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center mr-3">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
-                            </svg>
-                        </span>
-                        Source (Extract)
-                    </h3>
-
-                    <div class="grid md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Source Type</label>
-                            <select v-model="etlBuilder.source.type" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                                <option value="api">REST API</option>
-                                <option value="auth_http">Authenticated HTTP</option>
-                                <option value="webhook">Webhook Data</option>
-                                <option value="database">Database Query</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Credential</label>
-                            <div class="flex space-x-2">
-                                <select v-model="etlBuilder.source.credential_id" class="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                                    <option value="">Select credential...</option>
-                                    <option v-for="cred in credentials" :key="cred.id" :value="cred.id">{{ cred.name }} ({{ cred.service }})</option>
-                                </select>
-                                <button @click="openCredentialModal()" class="px-4 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 font-medium transition">+ New</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div v-if="etlBuilder.source.type === 'api' || etlBuilder.source.type === 'auth_http'" class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">URL</label>
-                            <input v-model="etlBuilder.source.url" type="text" placeholder="https://api.example.com/data" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Method</label>
-                                <select v-model="etlBuilder.source.method" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                                    <option value="GET">GET</option>
-                                    <option value="POST">POST</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Data Path (e.g., data.items)</label>
-                                <input v-model="etlBuilder.source.data_path" type="text" placeholder="data.items" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div v-if="etlBuilder.source.type === 'database'" class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">SQL Query</label>
-                            <textarea v-model="etlBuilder.source.query" rows="3" placeholder="SELECT * FROM users WHERE active = true" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 font-mono text-sm"></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Transform -->
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
-                    <h3 class="text-lg font-semibold mb-4 flex items-center">
-                        <span class="w-10 h-10 bg-yellow-600 rounded-xl flex items-center justify-center mr-3">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                            </svg>
-                        </span>
-                        Transform
-                    </h3>
-
-                    <div class="space-y-4">
-                        <div v-for="(transform, tIndex) in etlBuilder.transforms" :key="tIndex" class="bg-gray-800/50 rounded-xl p-4">
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="text-sm font-medium text-gray-300">Transform {{ tIndex + 1 }}</span>
-                                <button @click="etlBuilder.transforms.splice(tIndex, 1)" class="text-red-400 hover:text-red-300 text-sm">Remove</button>
-                            </div>
-                            <div class="grid md:grid-cols-3 gap-3">
-                                <div>
-                                    <label class="block text-xs text-gray-500 mb-1">Source Field</label>
-                                    <input v-model="transform.source" placeholder="source_field" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-xs text-gray-500 mb-1">Operation</label>
-                                    <select v-model="transform.operation" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm">
-                                        <option value="rename">Rename</option>
-                                        <option value="uppercase">UPPERCASE</option>
-                                        <option value="lowercase">lowercase</option>
-                                        <option value="trim">Trim</option>
-                                        <option value="to_number">To Number</option>
-                                        <option value="to_string">To String</option>
-                                        <option value="to_date">To Date</option>
-                                        <option value="concat">Concat</option>
-                                        <option value="split">Split</option>
-                                        <option value="replace">Replace</option>
-                                        <option value="default">Default Value</option>
-                                        <option value="filter">Filter</option>
-                                        <option value="map">Map Values</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs text-gray-500 mb-1">Target / Value</label>
-                                    <input v-model="transform.target" placeholder="target_field" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm">
-                                </div>
-                            </div>
-                        </div>
-                        <button @click="etlBuilder.transforms.push({source: '', operation: 'rename', target: ''})" class="text-purple-400 hover:text-purple-300 text-sm">+ Add Transform</button>
-                    </div>
-                </div>
-
-                <!-- Destination (Load) -->
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
-                    <h3 class="text-lg font-semibold mb-4 flex items-center">
-                        <span class="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center mr-3">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                            </svg>
-                        </span>
-                        Destination (Load)
-                    </h3>
-
-                    <div class="grid md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Database Type</label>
-                            <select v-model="etlBuilder.destination.type" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                                <option value="postgresql">PostgreSQL</option>
-                                <option value="mysql">MySQL</option>
-                                <option value="mongodb">MongoDB</option>
-                                <option value="snowflake">Snowflake</option>
-                                <option value="bigquery">BigQuery</option>
-                                <option value="redshift">Redshift</option>
-                                <option value="elasticsearch">Elasticsearch</option>
-                                <option value="airtable">Airtable</option>
-                                <option value="google_sheets">Google Sheets</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Credential</label>
-                            <div class="flex space-x-2">
-                                <select v-model="etlBuilder.destination.credential_id" class="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                                    <option value="">Select credential...</option>
-                                    <option v-for="cred in getCredentialsForService(etlBuilder.destination.type)" :key="cred.id" :value="cred.id">{{ cred.name }}</option>
-                                </select>
-                                <button @click="openCredentialModal(etlBuilder.destination.type)" class="px-4 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 font-medium transition">+ New</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Table / Collection Name</label>
-                            <input v-model="etlBuilder.destination.table" type="text" placeholder="users" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Write Mode</label>
-                            <select v-model="etlBuilder.destination.mode" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                                <option value="insert">Insert (append)</option>
-                                <option value="upsert">Upsert (insert or update)</option>
-                                <option value="replace">Replace (truncate + insert)</option>
-                            </select>
-                        </div>
-
-                        <div v-if="etlBuilder.destination.mode === 'upsert'">
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Primary Key Field</label>
-                            <input v-model="etlBuilder.destination.primary_key" type="text" placeholder="id" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-
-                        <!-- Field Mapping -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Field Mapping (source -> destination column)</label>
-                            <div class="space-y-2">
-                                <div v-for="(mapping, mIndex) in etlBuilder.destination.field_mappings" :key="mIndex" class="flex items-center space-x-2">
-                                    <input v-model="mapping.source" placeholder="source_field" class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm">
-                                    <span class="text-gray-500">-></span>
-                                    <input v-model="mapping.column" placeholder="db_column" class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm">
-                                    <select v-model="mapping.type" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm">
-                                        <option value="auto">Auto</option>
-                                        <option value="string">String</option>
-                                        <option value="integer">Integer</option>
-                                        <option value="float">Float</option>
-                                        <option value="boolean">Boolean</option>
-                                        <option value="datetime">DateTime</option>
-                                        <option value="json">JSON</option>
-                                    </select>
-                                    <button @click="etlBuilder.destination.field_mappings.splice(mIndex, 1)" class="px-2 py-2 rounded-lg bg-red-600/20 text-red-400 hover:bg-red-600/30 text-sm">X</button>
-                                </div>
-                                <button @click="etlBuilder.destination.field_mappings.push({source: '', column: '', type: 'auto'})" class="text-purple-400 hover:text-purple-300 text-sm">+ Add Field Mapping</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- WORKFLOWS LIST VIEW -->
-            <div v-if="currentView === 'workflows'" class="space-y-6">
-                <div class="flex items-center justify-between">
-                    <h1 class="text-3xl font-bold">My Workflows</h1>
-                    <button @click="startWorkflowBuilder" class="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 font-semibold transition">+ New Workflow</button>
-                </div>
-
-                <div class="grid grid-cols-3 gap-4">
-                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
-                        <div class="text-3xl font-bold text-purple-400">{{ workflows.length }}</div>
-                        <div class="text-gray-500 text-sm">Total Workflows</div>
-                    </div>
-                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
-                        <div class="text-3xl font-bold text-green-400">{{ workflows.filter(w => w.status === 'active').length }}</div>
-                        <div class="text-gray-500 text-sm">Active</div>
-                    </div>
-                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
-                        <div class="text-3xl font-bold text-blue-400">{{ workflows.reduce((sum, w) => sum + (w.run_count || 0), 0) }}</div>
-                        <div class="text-gray-500 text-sm">Total Runs</div>
-                    </div>
-                </div>
-
-                <div class="space-y-4">
-                    <div v-for="workflow in workflows" :key="workflow.id" class="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition">
-                        <div class="flex items-start justify-between">
-                            <div class="flex items-start space-x-4">
-                                <div :class="workflow.status === 'active' ? 'bg-green-500' : 'bg-gray-600'" class="w-3 h-3 rounded-full mt-2"></div>
-                                <div>
-                                    <h3 class="text-lg font-semibold">{{ workflow.name }}</h3>
-                                    <p class="text-gray-500 text-sm">{{ workflow.steps?.length || 1 }} steps</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <button @click="editWorkflow(workflow)" class="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm font-medium transition">Edit</button>
-                                <button @click="toggleWorkflow(workflow)" :class="workflow.status === 'active' ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-green-600 hover:bg-green-500'" class="px-4 py-2 rounded-lg text-sm font-medium transition">{{ workflow.status === 'active' ? 'Pause' : 'Activate' }}</button>
-                                <button @click="executeWorkflow(workflow.id)" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-sm font-medium transition">Run</button>
-                                <button @click="deleteWorkflow(workflow.id)" class="px-4 py-2 rounded-lg bg-gray-800 hover:bg-red-600 text-sm font-medium transition">Delete</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div v-if="workflows.length === 0" class="text-center py-16">
-                        <div class="w-20 h-20 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-2">No workflows yet</h3>
-                        <p class="text-gray-500 mb-6">Create your first workflow to get started</p>
-                        <button @click="startWorkflowBuilder" class="px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 font-semibold transition">Create Workflow</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SETTINGS VIEW -->
-            <div v-if="currentView === 'settings'" class="max-w-4xl mx-auto space-y-8">
-                <h1 class="text-3xl font-bold">Settings</h1>
-
-                <!-- Connected Accounts -->
-                <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
-                    <h2 class="text-xl font-semibold mb-4">Connected Accounts & Credentials</h2>
-                    <div class="space-y-3">
-                        <div v-for="cred in credentials" :key="cred.id" class="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg">
-                            <div class="flex items-center space-x-3">
-                                <span class="text-2xl">{{ getServiceIcon(cred.service) }}</span>
-                                <div>
-                                    <div class="font-medium">{{ cred.name }}</div>
-                                    <div class="text-sm text-gray-500">{{ cred.service }} - {{ cred.credential_type || 'api_key' }}</div>
-                                </div>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <button @click="editCredential(cred)" class="text-purple-400 hover:text-purple-300 text-sm">Edit</button>
-                                <button @click="deleteCredential(cred.id)" class="text-red-400 hover:text-red-300 text-sm">Delete</button>
-                            </div>
-                        </div>
-
-                        <div v-if="credentials.length === 0" class="text-center py-8 text-gray-500">No credentials configured yet</div>
-                    </div>
-
-                    <button @click="openCredentialModal()" class="mt-4 w-full py-3 border border-dashed border-gray-700 rounded-lg text-gray-400 hover:text-white hover:border-gray-600 transition">+ Add New Credential</button>
-                </div>
-            </div>
-        </main>
-
-        <!-- CREDENTIAL MODAL (Advanced) -->
-        <div v-if="showCredentialModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 overflow-y-auto py-8" @click.self="showCredentialModal = false">
-            <div class="bg-gray-900 border border-gray-700 rounded-2xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-                <h2 class="text-2xl font-bold mb-6">{{ editingCredential ? 'Edit' : 'Add' }} Credential</h2>
-
-                <div class="space-y-4">
-                    <!-- Basic Info -->
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Service</label>
-                            <select v-model="credentialForm.service" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                                <option value="">Select a service...</option>
-                                <optgroup v-for="(services, category) in servicesByCategory" :key="category" :label="category">
-                                    <option v-for="svc in services" :key="svc.service" :value="svc.service">{{ svc.icon }} {{ svc.display_name }}</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Credential Name</label>
-                            <input v-model="credentialForm.name" type="text" placeholder="My API Account" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-                    </div>
-
-                    <!-- Auth Type -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-400 mb-2">Authentication Type</label>
-                        <select v-model="credentialForm.auth_type" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            <option value="api_key">Simple API Key / Token</option>
-                            <option value="oauth2_client">OAuth2 Client Credentials</option>
-                            <option value="oauth2_password">OAuth2 Password Grant</option>
-                            <option value="login">Custom Login Endpoint</option>
-                            <option value="api_key_exchange">API Key Exchange</option>
-                            <option value="custom">Fully Custom Auth</option>
-                            <option value="database">Database Connection</option>
-                        </select>
-                    </div>
-
-                    <!-- Simple API Key -->
-                    <div v-if="credentialForm.auth_type === 'api_key'" class="space-y-4 bg-gray-800/50 rounded-xl p-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">API Key / Token</label>
-                            <input v-model="credentialForm.data.api_key" type="password" placeholder="sk-..." class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Base URL (optional)</label>
-                            <input v-model="credentialForm.data.base_url" type="text" placeholder="https://api.example.com" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-                    </div>
-
-                    <!-- OAuth2 Client Credentials -->
-                    <div v-if="credentialForm.auth_type === 'oauth2_client'" class="space-y-4 bg-gray-800/50 rounded-xl p-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Token URL</label>
-                            <input v-model="credentialForm.data.token_url" type="text" placeholder="https://api.example.com/oauth/token" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Client ID</label>
-                                <input v-model="credentialForm.data.client_id" type="text" placeholder="your_client_id" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Client Secret</label>
-                                <input v-model="credentialForm.data.client_secret" type="password" placeholder="your_client_secret" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                        </div>
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Scope (optional)</label>
-                                <input v-model="credentialForm.data.scope" type="text" placeholder="read write" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Audience (optional)</label>
-                                <input v-model="credentialForm.data.audience" type="text" placeholder="https://api.example.com" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Base URL (for API calls)</label>
-                            <input v-model="credentialForm.data.base_url" type="text" placeholder="https://api.example.com" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-                    </div>
-
-                    <!-- OAuth2 Password Grant -->
-                    <div v-if="credentialForm.auth_type === 'oauth2_password'" class="space-y-4 bg-gray-800/50 rounded-xl p-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Token URL</label>
-                            <input v-model="credentialForm.data.token_url" type="text" placeholder="https://api.example.com/oauth/token" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Client ID</label>
-                                <input v-model="credentialForm.data.client_id" type="text" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Client Secret (optional)</label>
-                                <input v-model="credentialForm.data.client_secret" type="password" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                        </div>
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Username</label>
-                                <input v-model="credentialForm.data.username" type="text" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Password</label>
-                                <input v-model="credentialForm.data.password" type="password" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Base URL</label>
-                            <input v-model="credentialForm.data.base_url" type="text" placeholder="https://api.example.com" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-                    </div>
-
-                    <!-- Custom Login -->
-                    <div v-if="credentialForm.auth_type === 'login'" class="space-y-4 bg-gray-800/50 rounded-xl p-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Login URL</label>
-                            <input v-model="credentialForm.data.auth_url" type="text" placeholder="https://api.example.com/auth/login" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Login Body (JSON)</label>
-                            <textarea v-model="credentialForm.data.auth_body_json" rows="3" placeholder='{"email": "user@example.com", "password": "secret"}' class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 font-mono text-sm"></textarea>
-                        </div>
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Token Path in Response</label>
-                                <input v-model="credentialForm.data.token_path" type="text" placeholder="data.access_token" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Expires In Path (optional)</label>
-                                <input v-model="credentialForm.data.expires_in_path" type="text" placeholder="data.expires_in" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Base URL</label>
-                            <input v-model="credentialForm.data.base_url" type="text" placeholder="https://api.example.com" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-                    </div>
-
-                    <!-- API Key Exchange -->
-                    <div v-if="credentialForm.auth_type === 'api_key_exchange'" class="space-y-4 bg-gray-800/50 rounded-xl p-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Exchange URL</label>
-                            <input v-model="credentialForm.data.auth_url" type="text" placeholder="https://api.example.com/auth/token" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">API Key</label>
-                                <input v-model="credentialForm.data.api_key" type="password" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">API Key Field Name</label>
-                                <input v-model="credentialForm.data.api_key_field" type="text" placeholder="apiKey" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Token Path</label>
-                            <input v-model="credentialForm.data.token_path" type="text" placeholder="token" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Base URL</label>
-                            <input v-model="credentialForm.data.base_url" type="text" placeholder="https://api.example.com" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-                    </div>
-
-                    <!-- Custom Auth -->
-                    <div v-if="credentialForm.auth_type === 'custom'" class="space-y-4 bg-gray-800/50 rounded-xl p-4">
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Auth URL</label>
-                                <input v-model="credentialForm.data.auth_url" type="text" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Method</label>
-                                <select v-model="credentialForm.data.auth_method" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                                    <option value="POST">POST</option>
-                                    <option value="GET">GET</option>
-                                    <option value="PUT">PUT</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Auth Body (JSON)</label>
-                            <textarea v-model="credentialForm.data.auth_body_json" rows="3" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 font-mono text-sm"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Auth Headers (JSON)</label>
-                            <textarea v-model="credentialForm.data.auth_headers_json" rows="2" placeholder='{"X-Custom-Header": "value"}' class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 font-mono text-sm"></textarea>
-                        </div>
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Token Path</label>
-                                <input v-model="credentialForm.data.token_path" type="text" placeholder="result.token" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Body Format</label>
-                                <select v-model="credentialForm.data.auth_body_format" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                                    <option value="json">JSON</option>
-                                    <option value="form">Form Data</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Base URL</label>
-                            <input v-model="credentialForm.data.base_url" type="text" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-                    </div>
-
-                    <!-- Database Connection -->
-                    <div v-if="credentialForm.auth_type === 'database'" class="space-y-4 bg-gray-800/50 rounded-xl p-4">
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Host</label>
-                                <input v-model="credentialForm.data.host" type="text" placeholder="localhost" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Port</label>
-                                <input v-model="credentialForm.data.port" type="number" placeholder="5432" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">Database Name</label>
-                            <input v-model="credentialForm.data.database" type="text" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                        </div>
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Username</label>
-                                <input v-model="credentialForm.data.username" type="text" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Password</label>
-                                <input v-model="credentialForm.data.password" type="password" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="flex items-center space-x-2 text-sm text-gray-400">
-                                <input v-model="credentialForm.data.ssl" type="checkbox" class="rounded bg-gray-700 border-gray-600 text-purple-500 focus:ring-purple-500">
-                                <span>Use SSL</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Token Injection Settings (for all auth types except database) -->
-                    <div v-if="credentialForm.auth_type !== 'database' && credentialForm.auth_type !== 'api_key'" class="space-y-4 bg-gray-800/50 rounded-xl p-4">
-                        <h4 class="text-sm font-semibold text-gray-300">Token Injection Settings</h4>
-                        <div class="grid md:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Inject Location</label>
-                                <select v-model="credentialForm.data.inject_location" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                                    <option value="header">Header</option>
-                                    <option value="query">Query Parameter</option>
-                                    <option value="cookie">Cookie</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Key Name</label>
-                                <input v-model="credentialForm.data.inject_key" type="text" placeholder="Authorization" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-400 mb-2">Prefix</label>
-                                <input v-model="credentialForm.data.inject_prefix" type="text" placeholder="Bearer " class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex space-x-3 mt-6">
-                    <button @click="showCredentialModal = false" class="flex-1 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 font-medium transition">Cancel</button>
-                    <button @click="saveCredential" class="flex-1 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 font-semibold transition">{{ editingCredential ? 'Update' : 'Save' }}</button>
-                </div>
+                <p class="auth-switch">
+                    Don't have an account? <a href="#" id="show-signup">Sign up</a>
+                </p>
             </div>
         </div>
 
-        <!-- Toast Notifications -->
-        <div class="fixed bottom-6 right-6 space-y-3 z-50">
-            <transition-group name="fade">
-                <div v-for="toast in toasts" :key="toast.id" :class="{ 'bg-green-600': toast.type === 'success', 'bg-red-600': toast.type === 'error', 'bg-purple-600': toast.type === 'info' }" class="px-5 py-4 rounded-xl shadow-2xl text-white font-medium max-w-sm">{{ toast.message }}</div>
-            </transition-group>
+        <!-- Signup Form -->
+        <div id="signup-screen" class="auth-screen" style="display: none;">
+            <div class="auth-card">
+                <h1>Create Account</h1>
+                <p class="subtitle">Start building integrations</p>
+
+                <form id="signup-form">
+                    <div class="form-group">
+                        <label for="signup-name">Full Name</label>
+                        <input type="text" id="signup-name" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" required placeholder="you@company.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-organization">Organization (Optional)</label>
+                        <input type="text" id="signup-organization" placeholder="Your Company">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Account</button>
+                </form>
+
+                <p class="auth-switch">
+                    Already have an account? <a href="#" id="show-login">Sign in</a>
+                </p>
+            </div>
         </div>
     </div>
 
-    <script>
-        const { createApp, ref, computed, onMounted, reactive } = Vue
+    <!-- Main App -->
+    <div id="app-container" class="app-container" style="display: none;">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>FlowForge</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#" data-view="dashboard" class="nav-link active">Dashboard</a></li>
+                <li><a href="#" data-view="workflows" class="nav-link">Workflows</a></li>
+                <li><a href="#" data-view="credentials" class="nav-link">Credentials</a></li>
+                <li><a href="#" data-view="executions" class="nav-link">Executions</a></li>
+                <li><a href="#" data-view="templates" class="nav-link">Templates</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <span id="user-name"></span>
+                    <span id="user-email"></span>
+                </div>
+                <button id="logout-btn" class="btn btn-secondary">Logout</button>
+            </div>
+        </nav>
 
-        createApp({
-            setup() {
-                const API_BASE = ''
-                const currentView = ref('home')
-                const loading = ref(false)
-                const toasts = ref([])
-                const workflows = ref([])
-                const credentials = ref([])
-                const allServices = ref([])
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="view active">
+                <header class="view-header">
+                    <h1>Dashboard</h1>
+                    <button id="create-workflow-btn" class="btn btn-primary">+ Create Workflow</button>
+                </header>
 
-                // Service icons
-                const serviceIcons = {
-                    slack: '💬', discord: '🎮', github: '🐙', notion: '📝', airtable: '📊',
-                    google_sheets: '📗', email: '📧', http: '🌐', auth_http: '🔐', webhook: '🔗',
-                    postgresql: '🐘', mysql: '🐬', mongodb: '🍃', snowflake: '❄️', bigquery: '📊',
-                    redshift: '🔴', elasticsearch: '🔍', redis: '⚡', dynamodb: '📦',
-                    s3: '☁️', azure_blob: '☁️', gcs: '☁️', dropbox: '📁',
-                    salesforce: '☁️', hubspot: '🧡', zoho: '📧', pipedrive: '📈',
-                    stripe: '💳', paypal: '💰', square: '⬛',
-                    jira: '🎯', asana: '✅', monday: '📅', trello: '📋', linear: '📐', clickup: '✓'
-                }
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3 id="total-workflows">0</h3>
+                        <p>Total Workflows</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="active-workflows">0</h3>
+                        <p>Active</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="total-executions">0</h3>
+                        <p>Executions</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="success-rate">0%</h3>
+                        <p>Success Rate</p>
+                    </div>
+                </div>
 
-                // Workflow Builder State
-                const workflowBuilder = ref({
-                    id: null,
-                    name: '',
-                    trigger: { type: 'webhook', cron: '' },
-                    steps: [{ id: 'step_1', service: '', action: '', credential_id: '', inputs: {}, mappings: [], showMapping: false }]
-                })
+                <div class="section">
+                    <h2>Recent Workflows</h2>
+                    <div id="recent-workflows" class="workflow-list"></div>
+                </div>
+            </div>
 
-                // ETL Builder State
-                const etlBuilder = ref({
-                    name: '',
-                    source: { type: 'api', credential_id: '', url: '', method: 'GET', data_path: '', query: '' },
-                    transforms: [],
-                    destination: { type: 'postgresql', credential_id: '', table: '', mode: 'insert', primary_key: '', field_mappings: [] }
-                })
+            <!-- Workflows View -->
+            <div id="workflows-view" class="view">
+                <header class="view-header">
+                    <h1>Workflows</h1>
+                    <button id="create-workflow-btn-2" class="btn btn-primary">+ Create Workflow</button>
+                </header>
+                <div id="workflows-list" class="workflow-list"></div>
+            </div>
 
-                // Credential Modal State
-                const showCredentialModal = ref(false)
-                const editingCredential = ref(null)
-                const credentialForm = ref({
-                    service: '',
-                    name: '',
-                    auth_type: 'api_key',
-                    data: { api_key: '', base_url: '', inject_location: 'header', inject_key: 'Authorization', inject_prefix: 'Bearer ' }
-                })
+            <!-- Workflow Builder View -->
+            <div id="builder-view" class="view">
+                <header class="view-header">
+                    <h1 id="builder-title">Create Workflow</h1>
+                    <div class="header-actions">
+                        <button id="cancel-workflow-btn" class="btn btn-secondary">Cancel</button>
+                        <button id="save-workflow-btn" class="btn btn-primary">Save</button>
+                        <button id="save-run-workflow-btn" class="btn btn-success">Save & Run</button>
+                    </div>
+                </header>
 
-                // Computed
-                const servicesByCategory = computed(() => {
-                    const categories = {}
-                    allServices.value.forEach(svc => {
-                        const cat = svc.category || 'Other'
-                        if (!categories[cat]) categories[cat] = []
-                        categories[cat].push(svc)
-                    })
-                    return categories
-                })
+                <div class="builder-container">
+                    <div class="builder-form">
+                        <div class="form-group">
+                            <label for="workflow-name">Workflow Name</label>
+                            <input type="text" id="workflow-name" placeholder="My Integration Workflow">
+                        </div>
 
-                // Methods
-                const showToast = (message, type = 'info') => {
-                    const id = Date.now()
-                    toasts.value.push({ id, message, type })
-                    setTimeout(() => toasts.value = toasts.value.filter(t => t.id !== id), 4000)
-                }
+                        <div class="form-group">
+                            <label for="workflow-description">Description</label>
+                            <textarea id="workflow-description" placeholder="What does this workflow do?"></textarea>
+                        </div>
 
-                const getServiceIcon = (service) => serviceIcons[service] || '🔌'
+                        <div class="form-group">
+                            <label>Trigger</label>
+                            <select id="workflow-trigger">
+                                <option value="manual">Manual</option>
+                                <option value="webhook">Webhook</option>
+                                <option value="schedule">Schedule</option>
+                            </select>
+                        </div>
 
-                const getServiceActions = (service) => {
-                    const svc = allServices.value.find(s => s.service === service)
-                    return svc?.actions || []
-                }
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="workflow-status">
+                                <option value="draft">Draft</option>
+                                <option value="active">Active</option>
+                                <option value="paused">Paused</option>
+                            </select>
+                        </div>
 
-                const getCredentialsForService = (service) => {
-                    if (!service) return credentials.value
-                    return credentials.value.filter(c => c.service === service || c.service === 'auth_http')
-                }
+                        <h3>Steps</h3>
+                        <div id="workflow-steps"></div>
+                        <button id="add-step-btn" class="btn btn-secondary">+ Add Step</button>
+                    </div>
+                </div>
+            </div>
 
-                // Workflow Builder Methods
-                const startWorkflowBuilder = () => {
-                    workflowBuilder.value = {
-                        id: null,
-                        name: '',
-                        trigger: { type: 'webhook', cron: '' },
-                        steps: [{ id: 'step_1', service: '', action: '', credential_id: '', inputs: {}, mappings: [], showMapping: false }]
-                    }
-                    currentView.value = 'builder'
-                }
+            <!-- Credentials View -->
+            <div id="credentials-view" class="view">
+                <header class="view-header">
+                    <h1>Credentials</h1>
+                    <button id="add-credential-btn" class="btn btn-primary">+ Add Credential</button>
+                </header>
+                <div id="credentials-list" class="credentials-list"></div>
+            </div>
 
-                const editWorkflow = (workflow) => {
-                    workflowBuilder.value = {
-                        id: workflow.id,
-                        name: workflow.name,
-                        trigger: workflow.trigger || { type: 'webhook', cron: '' },
-                        steps: (workflow.steps || []).map((s, i) => ({
-                            ...s,
-                            id: s.id || `step_${i + 1}`,
-                            inputs: s.inputs || {},
-                            mappings: s.mappings || [],
-                            showMapping: false
-                        }))
-                    }
-                    if (workflowBuilder.value.steps.length === 0) {
-                        workflowBuilder.value.steps.push({ id: 'step_1', service: '', action: '', credential_id: '', inputs: {}, mappings: [], showMapping: false })
-                    }
-                    currentView.value = 'builder'
-                }
+            <!-- Executions View -->
+            <div id="executions-view" class="view">
+                <header class="view-header">
+                    <h1>Execution History</h1>
+                </header>
+                <div id="executions-list" class="executions-list"></div>
+            </div>
 
-                const addStep = () => {
-                    const stepNum = workflowBuilder.value.steps.length + 1
-                    workflowBuilder.value.steps.push({ id: `step_${stepNum}`, service: '', action: '', credential_id: '', inputs: {}, mappings: [], showMapping: false })
-                }
+            <!-- Templates View -->
+            <div id="templates-view" class="view">
+                <header class="view-header">
+                    <h1>Workflow Templates</h1>
+                </header>
+                <div id="templates-list" class="templates-grid"></div>
+            </div>
+        </main>
+    </div>
 
-                const removeStep = (index) => {
-                    workflowBuilder.value.steps.splice(index, 1)
-                }
+    <!-- Modal for Adding Steps -->
+    <div id="step-modal" class="modal">
+        <div class="modal-content">
+            <h2>Add Workflow Step</h2>
+            <form id="step-form">
+                <div class="form-group">
+                    <label for="step-service">Service</label>
+                    <select id="step-service" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="step-action">Action</label>
+                    <select id="step-action" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="step-config">Configuration (JSON)</label>
+                    <textarea id="step-config" placeholder='{"key": "value"}'>{}</textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-step-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Step</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-                const onServiceChange = (step) => {
-                    step.action = ''
-                    step.credential_id = ''
-                }
+    <!-- Modal for Adding Credentials -->
+    <div id="credential-modal" class="modal">
+        <div class="modal-content">
+            <h2>Add Credential</h2>
+            <form id="credential-form">
+                <div class="form-group">
+                    <label for="cred-name">Name</label>
+                    <input type="text" id="cred-name" required placeholder="My API Key">
+                </div>
+                <div class="form-group">
+                    <label for="cred-service">Service</label>
+                    <input type="text" id="cred-service" required placeholder="slack, github, etc.">
+                </div>
+                <div class="form-group">
+                    <label for="cred-type">Type</label>
+                    <select id="cred-type" required>
+                        <option value="api_key">API Key</option>
+                        <option value="oauth2">OAuth2</option>
+                        <option value="basic">Basic Auth</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="cred-data">Credential Data (JSON)</label>
+                    <textarea id="cred-data" placeholder='{"api_key": "your-key-here"}' required>{}</textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-cred-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Credential</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-                const addInput = (step) => {
-                    const key = `field_${Object.keys(step.inputs).length + 1}`
-                    step.inputs[key] = ''
-                }
+    <!-- Toast Notifications -->
+    <div id="toast-container"></div>
 
-                const removeInput = (step, key) => {
-                    delete step.inputs[key]
-                }
-
-                const updateInputKey = (step, oldKey, newKey) => {
-                    if (oldKey !== newKey && newKey) {
-                        const value = step.inputs[oldKey]
-                        delete step.inputs[oldKey]
-                        step.inputs[newKey] = value
-                    }
-                }
-
-                // Credential Modal Methods
-                const openCredentialModal = (service = '') => {
-                    editingCredential.value = null
-                    credentialForm.value = {
-                        service: service,
-                        name: '',
-                        auth_type: 'api_key',
-                        data: { api_key: '', base_url: '', inject_location: 'header', inject_key: 'Authorization', inject_prefix: 'Bearer ' }
-                    }
-                    showCredentialModal.value = true
-                }
-
-                const editCredential = (cred) => {
-                    editingCredential.value = cred.id
-                    credentialForm.value = {
-                        service: cred.service,
-                        name: cred.name,
-                        auth_type: cred.credential_type || 'api_key',
-                        data: { ...cred.data }
-                    }
-                    showCredentialModal.value = true
-                }
-
-                // API Methods
-                const loadServices = async () => {
-                    try {
-                        const res = await fetch(`${API_BASE}/api/connectors`)
-                        const data = await res.json()
-                        allServices.value = (data.connectors || []).map(c => ({ ...c, icon: serviceIcons[c.service] || '🔌' }))
-                    } catch (e) {
-                        console.error('Failed to load services', e)
-                        // Fallback
-                        allServices.value = [
-                            { service: 'slack', display_name: 'Slack', icon: '💬', category: 'Communication', actions: [{ action: 'send_message', description: 'Send a message' }] },
-                            { service: 'discord', display_name: 'Discord', icon: '🎮', category: 'Communication', actions: [{ action: 'send_message', description: 'Send a message' }] },
-                            { service: 'github', display_name: 'GitHub', icon: '🐙', category: 'Development', actions: [{ action: 'create_issue', description: 'Create an issue' }] },
-                            { service: 'auth_http', display_name: 'Authenticated HTTP', icon: '🔐', category: 'Utility', actions: [{ action: 'get', description: 'GET request' }, { action: 'post', description: 'POST request' }] },
-                            { service: 'postgresql', display_name: 'PostgreSQL', icon: '🐘', category: 'Databases', actions: [{ action: 'query', description: 'Run SQL query' }, { action: 'insert', description: 'Insert rows' }] },
-                            { service: 'google_sheets', display_name: 'Google Sheets', icon: '📗', category: 'Productivity', actions: [{ action: 'append_row', description: 'Append row' }] }
-                        ]
-                    }
-                }
-
-                const loadWorkflows = async () => {
-                    try {
-                        const res = await fetch(`${API_BASE}/workflows`)
-                        const data = await res.json()
-                        workflows.value = data.workflows || []
-                    } catch (e) { console.error('Failed to load workflows', e) }
-                }
-
-                const loadCredentials = async () => {
-                    try {
-                        const res = await fetch(`${API_BASE}/credentials`)
-                        const data = await res.json()
-                        credentials.value = data.credentials || []
-                    } catch (e) { console.error('Failed to load credentials', e) }
-                }
-
-                const saveWorkflow = async () => {
-                    loading.value = true
-                    try {
-                        const data = {
-                            name: workflowBuilder.value.name || 'My Workflow',
-                            trigger: workflowBuilder.value.trigger,
-                            steps: workflowBuilder.value.steps.map(s => ({
-                                id: s.id,
-                                service: s.service,
-                                action: s.action,
-                                credential_id: s.credential_id,
-                                inputs: s.inputs,
-                                mappings: s.mappings
-                            }))
-                        }
-
-                        const url = workflowBuilder.value.id ? `${API_BASE}/workflows/${workflowBuilder.value.id}` : `${API_BASE}/workflows`
-                        const method = workflowBuilder.value.id ? 'PUT' : 'POST'
-
-                        const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
-                        if (res.ok) {
-                            showToast('Workflow saved!', 'success')
-                            currentView.value = 'workflows'
-                            loadWorkflows()
-                        } else {
-                            const err = await res.json()
-                            showToast(err.detail || 'Failed to save', 'error')
-                        }
-                    } catch (e) { showToast('Error saving workflow', 'error') }
-                    loading.value = false
-                }
-
-                const toggleWorkflow = async (workflow) => {
-                    const endpoint = workflow.status === 'active' ? 'deactivate' : 'activate'
-                    try {
-                        const res = await fetch(`${API_BASE}/workflows/${workflow.id}/${endpoint}`, { method: 'POST' })
-                        if (res.ok) {
-                            showToast(workflow.status === 'active' ? 'Workflow paused' : 'Workflow activated!', 'success')
-                            loadWorkflows()
-                        }
-                    } catch (e) { showToast('Error updating workflow', 'error') }
-                }
-
-                const executeWorkflow = async (id) => {
-                    try {
-                        const res = await fetch(`${API_BASE}/workflows/${id}/execute`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ trigger_data: {} }) })
-                        if (res.ok) { showToast('Workflow executed!', 'success') }
-                        else { showToast('Execution failed', 'error') }
-                    } catch (e) { showToast('Error executing workflow', 'error') }
-                }
-
-                const deleteWorkflow = async (id) => {
-                    if (!confirm('Delete this workflow?')) return
-                    try {
-                        const res = await fetch(`${API_BASE}/workflows/${id}`, { method: 'DELETE' })
-                        if (res.ok) { showToast('Workflow deleted', 'info'); loadWorkflows() }
-                    } catch (e) { showToast('Error deleting workflow', 'error') }
-                }
-
-                const saveCredential = async () => {
-                    const form = credentialForm.value
-                    if (!form.service || !form.name) { showToast('Please fill required fields', 'error'); return }
-
-                    // Parse JSON fields
-                    const data = { ...form.data, auth_type: form.auth_type }
-                    if (data.auth_body_json) { try { data.auth_body = JSON.parse(data.auth_body_json) } catch (e) {} }
-                    if (data.auth_headers_json) { try { data.auth_headers = JSON.parse(data.auth_headers_json) } catch (e) {} }
-
-                    try {
-                        const url = editingCredential.value ? `${API_BASE}/credentials/${editingCredential.value}` : `${API_BASE}/credentials`
-                        const method = editingCredential.value ? 'PUT' : 'POST'
-                        const res = await fetch(url, {
-                            method,
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ service: form.service, name: form.name, credential_type: form.auth_type, data })
-                        })
-                        if (res.ok) {
-                            showToast('Credential saved!', 'success')
-                            showCredentialModal.value = false
-                            loadCredentials()
-                        } else { showToast('Failed to save credential', 'error') }
-                    } catch (e) { showToast('Error saving credential', 'error') }
-                }
-
-                const deleteCredential = async (id) => {
-                    if (!confirm('Delete this credential?')) return
-                    try {
-                        const res = await fetch(`${API_BASE}/credentials/${id}`, { method: 'DELETE' })
-                        if (res.ok) { showToast('Credential deleted', 'info'); loadCredentials() }
-                    } catch (e) { showToast('Error deleting credential', 'error') }
-                }
-
-                const saveETLPipeline = async () => {
-                    // Convert ETL to workflow format
-                    const data = {
-                        name: etlBuilder.value.name || 'ETL Pipeline',
-                        description: 'ETL Pipeline',
-                        trigger: { type: 'manual' },
-                        steps: [
-                            { id: 'extract', service: etlBuilder.value.source.type === 'database' ? etlBuilder.value.source.type : 'auth_http', action: 'request', credential_id: etlBuilder.value.source.credential_id, inputs: { url: etlBuilder.value.source.url, method: etlBuilder.value.source.method } },
-                            { id: 'load', service: etlBuilder.value.destination.type, action: 'insert', credential_id: etlBuilder.value.destination.credential_id, inputs: { table: etlBuilder.value.destination.table, data: '{{steps.extract.output}}' }, mappings: etlBuilder.value.destination.field_mappings }
-                        ],
-                        metadata: { type: 'etl', transforms: etlBuilder.value.transforms }
-                    }
-                    try {
-                        const res = await fetch(`${API_BASE}/workflows`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
-                        if (res.ok) { showToast('ETL Pipeline saved!', 'success'); currentView.value = 'workflows'; loadWorkflows() }
-                        else { showToast('Failed to save pipeline', 'error') }
-                    } catch (e) { showToast('Error saving pipeline', 'error') }
-                }
-
-                onMounted(() => { loadServices(); loadWorkflows(); loadCredentials() })
-
-                return {
-                    currentView, loading, toasts, workflows, credentials, allServices, servicesByCategory,
-                    workflowBuilder, etlBuilder, showCredentialModal, editingCredential, credentialForm,
-                    showToast, getServiceIcon, getServiceActions, getCredentialsForService,
-                    startWorkflowBuilder, editWorkflow, addStep, removeStep, onServiceChange, addInput, removeInput, updateInputKey,
-                    openCredentialModal, editCredential, saveWorkflow, toggleWorkflow, executeWorkflow, deleteWorkflow,
-                    saveCredential, deleteCredential, saveETLPipeline
-                }
-            }
-        }).mount('#app')
-    </script>
+    <!-- Scripts -->
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/workflow-builder.js"></script>
+    <script src="/static/js/app.js"></script>
 </body>
 </html>
