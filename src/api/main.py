@@ -247,15 +247,14 @@ async def signup(request: SignupRequest):
     # Store password hash in extra field (not in model for simplicity)
     # In production, add password_hash field to User model
 
-    session = get_db_session()
     try:
-        # Check if email already exists
-        existing = session.query(User).filter(User.email == request.email).first()
-        if existing:
-            raise HTTPException(status_code=400, detail="Email already registered")
+        with get_db_session() as session:
+            # Check if email already exists
+            existing = session.query(User).filter(User.email == request.email).first()
+            if existing:
+                raise HTTPException(status_code=400, detail="Email already registered")
 
-        session.add(user)
-        session.commit()
+            session.add(user)
 
         return {
             "message": "Account created successfully",
@@ -270,11 +269,8 @@ async def signup(request: SignupRequest):
     except HTTPException:
         raise
     except Exception as e:
-        session.rollback()
         logger.error(f"Signup error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to create account")
-    finally:
-        session.close()
+        raise HTTPException(status_code=500, detail=f"Failed to create account: {str(e)}")
 
 
 @app.post("/auth/login", tags=["Authentication"])
@@ -287,34 +283,32 @@ async def login(request: LoginRequest):
     # Hash provided password
     password_hash = hashlib.sha256(request.password.encode()).hexdigest()
 
-    session = get_db_session()
     try:
-        # Find user by email
-        user = session.query(User).filter(User.email == request.email).first()
+        with get_db_session() as session:
+            # Find user by email
+            user = session.query(User).filter(User.email == request.email).first()
 
-        if not user or not user.is_active:
-            raise HTTPException(status_code=401, detail="Invalid credentials")
+            if not user or not user.is_active:
+                raise HTTPException(status_code=401, detail="Invalid credentials")
 
-        # For now, accept any password since we don't have password storage yet
-        # In production, verify password_hash
+            # For now, accept any password since we don't have password storage yet
+            # In production, verify password_hash
 
-        return {
-            "message": "Login successful",
-            "api_key": user.api_key,
-            "user": {
-                "id": user.id,
-                "email": user.email,
-                "name": user.name,
-                "organization": user.organization
+            return {
+                "message": "Login successful",
+                "api_key": user.api_key,
+                "user": {
+                    "id": user.id,
+                    "email": user.email,
+                    "name": user.name,
+                    "organization": user.organization
+                }
             }
-        }
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Login error: {e}")
-        raise HTTPException(status_code=500, detail="Login failed")
-    finally:
-        session.close()
+        raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")
 
 
 # ============== Services Endpoints ==============
