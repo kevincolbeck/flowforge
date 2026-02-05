@@ -29,6 +29,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD python -c "import requests; requests.get('http://localhost:8000/health')"
 
-# Run database migrations and start server
-CMD python -c "from src.db.database import init_db; init_db()" && \
-    uvicorn src.api.main:app --host 0.0.0.0 --port ${PORT:-8000}
+# Start server (database migrations run on first request via FastAPI lifespan)
+CMD uvicorn src.api.main:app --host 0.0.0.0 --port ${PORT:-8000}

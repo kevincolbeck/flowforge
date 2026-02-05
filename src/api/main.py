@@ -118,6 +118,15 @@ async def lifespan(app: FastAPI):
     # Startup
     app.state.app_state = AppState()
 
+    # Initialize database
+    try:
+        from ..db.database import init_db
+        init_db()
+        logger.info("Database initialized successfully")
+    except Exception as e:
+        logger.warning(f"Database initialization skipped: {e}")
+        logger.warning("App will run without persistent storage")
+
     # Setup webhook manager
     async def execute_workflow_by_id(workflow_id: str, trigger_data: dict):
         workflow = app.state.app_state.workflows.get(workflow_id)
